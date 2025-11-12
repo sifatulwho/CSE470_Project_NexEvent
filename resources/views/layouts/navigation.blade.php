@@ -34,6 +34,16 @@
                             {{ __('My Events') }}
                         </x-nav-link>
                     @endif
+
+                    <x-nav-link :href="route('features.events.index')" :active="request()->routeIs('features.events.*')">
+                        {{ __('Past Events') }}
+                    </x-nav-link>
+
+                    @auth
+                        <x-nav-link :href="route('features.wishlist.index')" :active="request()->routeIs('features.wishlist.*')">
+                            {{ __('Wishlist') }}
+                        </x-nav-link>
+                    @endauth
                 </div>
             </div>
 
@@ -90,6 +100,14 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('features.events.index')" :active="request()->routeIs('features.events.*')">
+                {{ __('Past Events') }}
+            </x-responsive-nav-link>
+            @auth
+                <x-responsive-nav-link :href="route('features.wishlist.index')" :active="request()->routeIs('features.wishlist.*')">
+                    {{ __('Wishlist') }}
+                </x-responsive-nav-link>
+            @endauth
         </div>
 
         <!-- Responsive Settings Options -->

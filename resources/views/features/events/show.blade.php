@@ -1,0 +1,172 @@
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-xl font-semibold text-gray-900">{{ $event->title }}</h2>
+                <p class="mt-1 text-sm text-gray-500">Event details and resources</p>
+            </div>
+            <a href="{{ route('features.events.index') }}" class="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50">
+                ← Back to Events
+            </a>
+        </div>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            @if (session('success'))
+                <div class="mb-6 rounded-lg bg-emerald-50 border border-emerald-200 p-4 text-sm text-emerald-800">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4 text-sm text-red-800">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            <div class="grid gap-6 lg:grid-cols-3">
+                <div class="lg:col-span-2">
+                    <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Event Information</h3>
+                        
+                        @if ($event->description)
+                            <p class="text-gray-600 mb-6">{{ $event->description }}</p>
+                        @endif
+
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <svg class="h-5 w-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-900">Date</p>
+                                    <p class="text-sm text-gray-600">{{ $event->start_date->format('F d, Y') }} - {{ $event->end_date->format('F d, Y') }}</p>
+                                </div>
+                            </div>
+
+                            @if ($event->location)
+                                <div class="flex items-start gap-3">
+                                    <svg class="h-5 w-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-900">Location</p>
+                                        <p class="text-sm text-gray-600">{{ $event->location }}</p>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div class="flex items-start gap-3">
+                                <svg class="h-5 w-5 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-900">Organizer</p>
+                                    <p class="text-sm text-gray-600">{{ $event->organizer->name }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        @auth
+                            <div class="mt-6 pt-6 border-t border-gray-200">
+                                <form action="{{ route('features.wishlist.toggle') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="type" value="event">
+                                    <input type="hidden" name="id" value="{{ $event->id }}">
+                                    <button type="submit" class="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition {{ $isWishlisted ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100' }}">
+                                        <svg class="h-5 w-5" fill="{{ $isWishlisted ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg>
+                                        {{ $isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist' }}
+                                    </button>
+                                </form>
+                            </div>
+                        @endauth
+                    </div>
+
+                    <div class="mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Event Resources</h3>
+                            @if (auth()->check() && (auth()->id() === $event->organizer_id || auth()->user()->hasRole(\App\Models\User::ROLE_ADMIN)))
+                                <a href="{{ route('features.resources.create', $event) }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
+                                    Upload Resource
+                                </a>
+                            @endif
+                        </div>
+
+                        @if ($event->resources->count() > 0)
+                            <div class="space-y-3">
+                                @foreach ($event->resources as $resource)
+                                    <div class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4">
+                                        <div class="flex items-center gap-4 flex-1">
+                                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100">
+                                                <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="text-sm font-semibold text-gray-900">{{ $resource->title }}</p>
+                                                @if ($resource->description)
+                                                    <p class="text-xs text-gray-500 mt-1">{{ Str::limit($resource->description, 60) }}</p>
+                                                @endif
+                                                <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                                                    <span>{{ $resource->file_type ?? 'File' }}</span>
+                                                    <span>{{ $resource->file_size_human }}</span>
+                                                    <span>Uploaded by {{ $resource->uploader->name }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            @auth
+                                                @php
+                                                    $isResourceWishlisted = \App\Models\Wishlist::where('user_id', auth()->id())
+                                                        ->where('event_resource_id', $resource->id)
+                                                        ->whereNull('event_id')
+                                                        ->exists();
+                                                @endphp
+                                                <form action="{{ route('features.wishlist.toggle') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="type" value="resource">
+                                                    <input type="hidden" name="id" value="{{ $resource->id }}">
+                                                    <button type="submit" class="p-2 rounded-lg hover:bg-gray-200 transition" title="{{ $isResourceWishlisted ? 'Remove from wishlist' : 'Add to wishlist' }}">
+                                                        <svg class="h-5 w-5 {{ $isResourceWishlisted ? 'text-red-500 fill-current' : 'text-gray-400' }}" fill="{{ $isResourceWishlisted ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            @endauth
+                                            <a href="{{ route('features.resources.download', $resource) }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
+                                                Download
+                                            </a>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-sm text-gray-500 text-center py-8">No resources available for this event yet.</p>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="lg:col-span-1">
+                    <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <a href="{{ route('features.wishlist.index') }}" class="block rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-100 text-center">
+                                View My Wishlist
+                            </a>
+                            @if (auth()->check() && (auth()->id() === $event->organizer_id || auth()->user()->hasRole(\App\Models\User::ROLE_ADMIN)))
+                                <a href="{{ route('features.resources.create', $event) }}" class="block rounded-lg bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-500 text-center">
+                                    Upload Resources
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
+
