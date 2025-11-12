@@ -33,3 +33,5 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+#ncdjcnd;sfjvco;aidwfja;iowdsfgjnve;aiordfgjvnh;ioaerjghfiorefhjgnvdeikog
+#jdsjsnvklj
