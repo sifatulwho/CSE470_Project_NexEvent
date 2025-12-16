@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
@@ -81,5 +82,29 @@ class User extends Authenticatable
         $name = urlencode($this->name);
 
         return "https://ui-avatars.com/api/?name={$name}&background=6366F1&color=FFFFFF";
+    }
+
+    /**
+     * Get the events organized by this user.
+     */
+    public function organizedEvents(): HasMany
+    {
+        return $this->hasMany(Event::class, 'organizer_id');
+    }
+
+    /**
+     * Get the event registrations for this user.
+     */
+    public function eventRegistrations(): HasMany
+    {
+        return $this->hasMany(EventRegistration::class, 'attendee_id');
+    }
+
+    /**
+     * Get the check-ins for this user.
+     */
+    public function checkins(): HasMany
+    {
+        return $this->hasMany(EventCheckin::class, 'attendee_id');
     }
 }

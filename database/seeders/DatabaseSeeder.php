@@ -3,6 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Event;
+use App\Models\EventRegistration;
+use App\Models\EventCheckin;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -26,7 +29,42 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        User::factory(5)->organizer()->create();
-        User::factory(15)->create();
+        // Create organizers and attendees
+        $organizers = User::factory(5)->organizer()->create();
+        $attendees = User::factory(15)->create();
+
+        // Create events for each organizer
+        foreach ($organizers as $organizer) {
+            $events = Event::factory(3)->create([
+                'organizer_id' => $organizer->id,
+            ]);
+
+            // Register attendees for events and create check-ins
+            foreach ($events as $event) {
+                $registeredAttendees = $attendees->random(rand(5, 12));
+                
+                foreach ($registeredAttendees as $attendee) {
+                    // Create registration
+                    EventRegistration::create([
+                        'event_id' => $event->id,
+                        'attendee_id' => $attendee->id,
+                        'status' => 'registered',
+                        'registered_at' => now()->subDays(rand(1, 30)),
+                    ]);
+
+                    // Randomly create check-ins (simulate 70% attendance)
+                    if (rand(1, 100) <= 70) {
+                        EventCheckin::create([
+                            'event_id' => $event->id,
+                            'attendee_id' => $attendee->id,
+                            'checked_in_by' => $organizer->id,
+                            'checked_in_at' => $event->start_date->subHours(rand(0, 2)),
+                            'check_in_method' => 'manual',
+                            'notes' => null,
+                        ]);
+                    }
+                }
+            }
+        }
     }
 }
