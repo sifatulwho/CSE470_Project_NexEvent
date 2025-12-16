@@ -8,6 +8,11 @@ use App\Models\User;
 class EventPolicy
 {
     /**
+     * Determine whether the user can view any events.
+     */
+    public function viewAny(User $user): bool
+    {
+        return true;
      * Determine whether the user can manage check-ins for an event.
      */
     public function manageCheckin(User $user, Event $event): bool
@@ -21,6 +26,7 @@ class EventPolicy
      */
     public function view(User $user, Event $event): bool
     {
+        return true;
         return true; // Everyone can view events
     }
 
@@ -29,6 +35,7 @@ class EventPolicy
      */
     public function create(User $user): bool
     {
+        return $user->hasRole(User::ROLE_ORGANIZER);
         return $user->hasRole([User::ROLE_ORGANIZER, User::ROLE_ADMIN]);
     }
 

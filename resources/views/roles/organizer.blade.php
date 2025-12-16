@@ -14,6 +14,9 @@
                     <li class="flex items-start gap-2"><span class="mt-1 h-2 w-2 rounded-full bg-emerald-500"></span>Track registrations in real time and export attendee manifests for on-site check-ins.</li>
                     <li class="flex items-start gap-2"><span class="mt-1 h-2 w-2 rounded-full bg-emerald-500"></span>Collaborate with your team through shared tasks, reminders, and vendor handoffs.</li>
                 </ul>
+                <div class="mt-6">
+                    <a href="{{ route('speakers.index') }}" class="inline-block bg-indigo-600 text-white px-4 py-2 rounded">Manage Speakers</a>
+                </div>
             </div>
         </div>
     </div>

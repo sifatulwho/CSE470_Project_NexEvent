@@ -54,7 +54,7 @@
         <div>
                             <label for="email" class="text-sm font-medium text-gray-700">Email address</label>
                             <div class="mt-2">
-                                <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus autocomplete="username" placeholder="Enter your email" class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus autocomplete="username" placeholder="you@example.com" class="w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                             </div>
                             @error('email')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -103,8 +103,8 @@
                     </form>
 
                     <div class="mt-6 grid gap-4 text-sm text-gray-500 sm:grid-cols-2">
-                        <p>Having trouble signing in? Reach out to us directly at <span class="font-semibold text-gray-700">admin@nexevent.org</span>.</p>
-                        <!-- <p class="text-sm">No account yet? <a href="{{ route('register') }}" class="font-semibold text-indigo-600 hover:text-indigo-500">Create one in a minute</a>.</p> -->
+                        <p>Having trouble signing in? Reach our concierge team directly at <span class="font-semibold text-gray-700">events@nexevent.test</span>.</p>
+                        <p class="text-sm">No account yet? <a href="{{ route('register') }}" class="font-semibold text-indigo-600 hover:text-indigo-500">Create one in a minute</a>.</p>
                     </div>
                 </div>
             </div>

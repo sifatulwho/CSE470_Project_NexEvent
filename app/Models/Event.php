@@ -4,6 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Event extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -19,6 +27,19 @@ class Event extends Model
         'start_date',
         'end_date',
         'location',
+        'max_attendees',
+        'organizer_id',
+        'image_url',
+        'status',
+    ];
+
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+    ];
+
+    /**
+     * Get the organizer (user) of this event.
         'category',
         'capacity',
         'status',
@@ -41,6 +62,7 @@ class Event extends Model
     }
 
     /**
+     * Get all registrations for this event.
      * Get the registrations for the event.
      */
     public function registrations(): HasMany
@@ -49,6 +71,41 @@ class Event extends Model
     }
 
     /**
+     * Get all tickets for this event.
+     */
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    /**
+     * Get the sessions (schedule) for this event.
+     */
+    public function sessions(): HasMany
+    {
+        return $this->hasMany(Session::class);
+    }
+
+    /**
+     * Get the count of active registrations.
+     */
+    public function activeRegistrationsCount(): int
+    {
+        return $this->registrations()
+            ->where('status', 'confirmed')
+            ->count();
+    }
+
+    /**
+     * Check if event has available seats.
+     */
+    public function hasAvailableSeats(): bool
+    {
+        if (!$this->max_attendees) {
+            return true;
+        }
+
+        return $this->activeRegistrationsCount() < $this->max_attendees;
      * Get the check-ins for the event.
      */
     public function checkins(): HasMany
