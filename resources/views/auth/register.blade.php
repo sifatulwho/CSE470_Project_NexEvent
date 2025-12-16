@@ -44,15 +44,15 @@
                         <div class="grid gap-4 sm:grid-cols-2">
                             <div class="sm:col-span-2">
                                 <label for="name" class="text-sm font-medium text-gray-700">Full name</label>
-                                <input id="name" name="name" type="text" value="{{ old('name') }}" required autocomplete="name" placeholder="Enter your full name" class="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                <input id="name" name="name" type="text" value="{{ old('name') }}" required autocomplete="name" placeholder="Alex Morgan" class="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                                 @error('name')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="email" class="text-sm font-medium text-gray-700">Email</label>
-                                <input id="email" name="email" type="email" value="{{ old('email') }}" required autocomplete="username" placeholder="Enter your email" class="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                                <label for="email" class="text-sm font-medium text-gray-700">Work email</label>
+                                <input id="email" name="email" type="email" value="{{ old('email') }}" required autocomplete="username" placeholder="you@example.com" class="mt-2 w-full rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                                 @error('email')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -141,7 +141,8 @@
                     </form>
 
                     <div class="mt-8 grid gap-4 text-sm text-gray-500 sm:grid-cols-2">
-                      <p>Having trouble creating acoount? Email <span class="font-semibold text-gray-700">admin@nexevent.org</span> for guided onboarding.</p>
+                        <p>Invite your teammates once you are inside. You can manage roles and permissions from the control center anytime.</p>
+                        <p>Have an enterprise rollout? Email <span class="font-semibold text-gray-700">hello@nexevent.test</span> for guided onboarding.</p>
                     </div>
                 </div>
             </div>

@@ -46,7 +46,8 @@ class EventRegistration extends Model
      */
     public function ticket(): HasOne
     {
-        return $this->hasOne(Ticket::class);
+        // ticket table stores foreign key as `registration_id`
+        return $this->hasOne(Ticket::class, 'registration_id');
     }
 
     /**

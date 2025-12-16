@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Event;
+use App\Policies\EventPolicy;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->registerPolicies();
+    }
+
+    /**
+     * Register authorization policies.
+     */
+    protected function registerPolicies(): void
+    {
+        // Event policy
+        \Illuminate\Support\Facades\Gate::policy(Event::class, EventPolicy::class);
     }
 }

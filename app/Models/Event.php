@@ -53,6 +53,14 @@ class Event extends Model
     }
 
     /**
+     * Get the sessions (schedule) for this event.
+     */
+    public function sessions(): HasMany
+    {
+        return $this->hasMany(Session::class);
+    }
+
+    /**
      * Get the count of active registrations.
      */
     public function activeRegistrationsCount(): int

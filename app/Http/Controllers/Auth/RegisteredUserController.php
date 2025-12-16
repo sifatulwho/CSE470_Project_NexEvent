@@ -42,10 +42,14 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', Rule::in($allowedRoles)],
+            // role is optional; default to attendee when not provided (useful for public registration)
+            'role' => ['sometimes', Rule::in($allowedRoles)],
         ]);
 
-        if ($validated['role'] === User::ROLE_ADMIN) {
+        // Use provided role or default to attendee
+        $role = $validated['role'] ?? User::ROLE_ATTENDEE;
+
+        if ($role === User::ROLE_ADMIN) {
             if (! $adminAvailable || strcasecmp($validated['email'], $adminEmail) !== 0) {
                 abort(403, 'You are not authorised to create an administrator account.');
             }
@@ -55,7 +59,7 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'role' => $role,
         ]);
 
         event(new Registered($user));

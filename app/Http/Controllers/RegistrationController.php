@@ -53,6 +53,14 @@ class RegistrationController extends Controller
             'qr_code' => null, // Will be generated on display
         ]);
 
+        // Send confirmation notification
+        try {
+            Auth::user()->notify(new \App\Notifications\RegistrationConfirmed($registration));
+        } catch (\Exception $e) {
+            // Log but don't fail the registration
+            \Log::error('Failed to send registration confirmation: ' . $e->getMessage());
+        }
+
         return redirect()->route('registrations.show', $registration)
             ->with('success', 'Successfully registered for the event! Your ticket has been generated.');
     }
