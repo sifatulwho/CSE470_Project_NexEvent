@@ -44,6 +44,16 @@ class Event extends Model
         return $this->hasMany(Wishlist::class);
     }
 
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(EventSchedule::class);
+    }
+
+    public function registrations(): HasMany
+    {
+        return $this->hasMany(EventRegistration::class);
+    }
+
     public function isPast(): bool
     {
         return $this->end_date < now();

@@ -56,4 +56,17 @@ Route::prefix('features')->name('features.')->group(function () {
     });
 });
 
+// Event registration routes (attendees)
+Route::middleware('auth')->group(function () {
+    Route::post('/features/events/{event}/register', [\App\Http\Controllers\Features\EventRegistrationController::class, 'store'])->name('features.events.register');
+    Route::delete('/features/events/{event}/register', [\App\Http\Controllers\Features\EventRegistrationController::class, 'destroy'])->name('features.events.unregister');
+});
+
+// Organizer-only schedule management
+Route::middleware(['auth','verified','role:'.User::ROLE_ORGANIZER])->group(function () {
+    Route::post('/features/events/{event}/schedules', [\App\Http\Controllers\Features\EventScheduleController::class, 'store'])->name('features.events.schedules.store');
+    Route::post('/features/events/{event}/schedules/{schedule}/sessions', [\App\Http\Controllers\Features\EventScheduleController::class, 'storeSession'])->name('features.events.schedules.sessions.store');
+    Route::get('/features/events/{event}/schedules', [\App\Http\Controllers\Features\EventScheduleController::class, 'index'])->name('features.events.schedules.index');
+});
+
 require __DIR__.'/auth.php';

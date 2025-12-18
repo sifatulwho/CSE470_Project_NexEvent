@@ -84,6 +84,45 @@
                                 </form>
                             </div>
                         @endauth
+                    
+                    @auth
+                        <div class="mt-6">
+                            @php($registered = auth()->check() ? \App\Models\EventRegistration::where('event_id', $event->id)->where('user_id', auth()->id())->exists() : false)
+                            @if (! $registered)
+                                <form action="{{ route('features.events.register', $event) }}" method="POST">
+                                    @csrf
+                                    <button class="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white">Register</button>
+                                </form>
+                            @else
+                                <form action="{{ route('features.events.unregister', $event) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="mt-4 rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold">Cancel registration</button>
+                                </form>
+                            @endif
+                        </div>
+                    @endauth
+
+                    @php($schedules = \App\Models\EventSchedule::where('event_id', $event->id)->with('sessions.speaker')->orderBy('start_time')->get())
+                    @if ($schedules->isNotEmpty())
+                        <div class="mt-8">
+                            <h3 class="text-lg font-semibold mb-3">Schedule</h3>
+                            @foreach ($schedules as $schedule)
+                                <div class="mb-4 rounded-lg border p-4 bg-white">
+                                    <h4 class="font-semibold">{{ $schedule->title }}</h4>
+                                    @if($schedule->description)
+                                        <p class="text-sm text-gray-500">{{ $schedule->description }}</p>
+                                    @endif
+                                    @foreach ($schedule->sessions as $session)
+                                        <div class="mt-3 pl-3">
+                                            <div class="text-sm font-medium">{{ $session->title }} <span class="text-xs text-gray-400">({{ optional($session->start_time)->format('M d H:i') }})</span></div>
+                                            <div class="text-xs text-gray-500">{{ $session->speaker?->name }} — {{ $session->location }}</div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
                     </div>
 
                     <div class="mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
