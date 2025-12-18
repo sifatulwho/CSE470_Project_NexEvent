@@ -134,59 +134,76 @@
                                 </a>
                             @endif
                         </div>
+                        {{-- Comments --}}
+                        <div class="mb-6">
+                            <h4 class="text-md font-semibold mb-2">Comments</h4>
+                            @auth
+                                <form action="{{ route('features.events.comments.store', $event) }}" method="POST">
+                                    @csrf
+                                    <textarea name="body" rows="3" class="w-full rounded-md border-gray-200 p-2" placeholder="Add a comment"></textarea>
+                                    <div class="mt-2 text-right">
+                                        <button class="rounded-lg bg-indigo-600 px-3 py-1 text-sm text-white">Post comment</button>
+                                    </div>
+                                </form>
+                            @else
+                                <p class="text-sm text-gray-500">Please <a href="{{ route('login') }}" class="text-indigo-600">login</a> to comment.</p>
+                            @endauth
 
-                        @if ($event->resources->count() > 0)
-                            <div class="space-y-3">
-                                @foreach ($event->resources as $resource)
-                                    <div class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4">
-                                        <div class="flex items-center gap-4 flex-1">
-                                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100">
-                                                <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                                </svg>
-                                            </div>
-                                            <div class="flex-1">
-                                                <p class="text-sm font-semibold text-gray-900">{{ $resource->title }}</p>
-                                                @if ($resource->description)
-                                                    <p class="text-xs text-gray-500 mt-1">{{ Str::limit($resource->description, 60) }}</p>
-                                                @endif
-                                                <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                                                    <span>{{ $resource->file_type ?? 'File' }}</span>
-                                                    <span>{{ $resource->file_size_human }}</span>
-                                                    <span>Uploaded by {{ $resource->uploader->name }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            @auth
-                                                @php
-                                                    $isResourceWishlisted = \App\Models\Wishlist::where('user_id', auth()->id())
-                                                        ->where('event_resource_id', $resource->id)
-                                                        ->whereNull('event_id')
-                                                        ->exists();
-                                                @endphp
-                                                <form action="{{ route('features.wishlist.toggle') }}" method="POST">
-                                                    @csrf
-                                                    <input type="hidden" name="type" value="resource">
-                                                    <input type="hidden" name="id" value="{{ $resource->id }}">
-                                                    <button type="submit" class="p-2 rounded-lg hover:bg-gray-200 transition" title="{{ $isResourceWishlisted ? 'Remove from wishlist' : 'Add to wishlist' }}">
-                                                        <svg class="h-5 w-5 {{ $isResourceWishlisted ? 'text-red-500 fill-current' : 'text-gray-400' }}" fill="{{ $isResourceWishlisted ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                                        </svg>
-                                                    </button>
-                                                </form>
-                                            @endauth
-                                            <a href="{{ route('features.resources.download', $resource) }}" class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
-                                                Download
-                                            </a>
-                                        </div>
+                            <div class="mt-4 space-y-4">
+                                @foreach(\App\Models\Comment::where('event_id', $event->id)->whereNull('parent_id')->with('user.replies')->orderBy('created_at','desc')->get() as $comment)
+                                    <div class="border rounded p-3 bg-gray-50">
+                                        <div class="text-sm font-semibold">{{ $comment->user->name }} <span class="text-xs text-gray-400">{{ $comment->created_at->diffForHumans() }}</span></div>
+                                        <div class="text-sm text-gray-700 mt-1">{{ $comment->body }}</div>
                                     </div>
                                 @endforeach
                             </div>
-                        @else
-                            <p class="text-sm text-gray-500 text-center py-8">No resources available for this event yet.</p>
-                        @endif
-                    </div>
+                        </div>
+
+                        {{-- Reviews --}}
+                        <div class="mb-6">
+                            <h4 class="text-md font-semibold mb-2">Reviews</h4>
+
+                            @auth
+                                <form action="{{ route('features.events.reviews.store', $event) }}" method="POST">
+                                    @csrf
+                                    <div class="flex items-center gap-2">
+                                        <label class="text-sm">Rating</label>
+                                        <select name="rating" class="rounded-md border-gray-200">
+                                            @for($i=1;$i<=5;$i++)
+                                                <option value="{{ $i }}">{{ $i }} &starf;</option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                    <div class="mt-2">
+                                        <input name="title" class="w-full rounded-md border-gray-200 p-2" placeholder="Title (optional)">
+                                    </div>
+                                    <div class="mt-2">
+                                        <textarea name="body" rows="3" class="w-full rounded-md border-gray-200 p-2" placeholder="Write your review"></textarea>
+                                    </div>
+                                    <div class="mt-2 text-right">
+                                        <button class="rounded-lg bg-indigo-600 px-3 py-1 text-sm text-white">Submit review</button>
+                                    </div>
+                                </form>
+                            @else
+                                <p class="text-sm text-gray-500">Please <a href="{{ route('login') }}" class="text-indigo-600">login</a> to leave a review.</p>
+                            @endauth
+
+                            <div class="mt-4 space-y-4">
+                                @foreach(\App\Models\Review::where('event_id', $event->id)->with('user')->orderBy('created_at','desc')->get() as $review)
+                                    <div class="border rounded p-3 bg-gray-50">
+                                        <div class="text-sm font-semibold">{{ $review->user->name }} <span class="text-xs text-gray-400">{{ $review->created_at->diffForHumans() }}</span></div>
+                                        <div class="text-sm text-yellow-600">Rating: {{ $review->rating }} / 5</div>
+                                        @if($review->title)
+                                            <div class="text-sm font-medium mt-1">{{ $review->title }}</div>
+                                        @endif
+                                        @if($review->body)
+                                            <div class="text-sm text-gray-700 mt-1">{{ $review->body }}</div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
                 </div>
 
                 <div class="lg:col-span-1">

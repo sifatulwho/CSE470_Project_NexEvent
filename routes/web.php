@@ -60,10 +60,16 @@ Route::prefix('features')->name('features.')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/features/events/{event}/register', [\App\Http\Controllers\Features\EventRegistrationController::class, 'store'])->name('features.events.register');
     Route::delete('/features/events/{event}/register', [\App\Http\Controllers\Features\EventRegistrationController::class, 'destroy'])->name('features.events.unregister');
-});
 
-// Organizer-only schedule management
-Route::middleware(['auth','verified','role:'.User::ROLE_ORGANIZER])->group(function () {
+        // Comments & Reviews
+        Route::post('/features/events/{event}/comments', [\App\Http\Controllers\Features\CommentController::class, 'store'])->name('features.events.comments.store');
+        Route::post('/features/events/{event}/reviews', [\App\Http\Controllers\Features\ReviewController::class, 'store'])->name('features.events.reviews.store');
+
+        // Chat - fetch/store chats/messages
+        Route::get('/features/chats', [\App\Http\Controllers\Features\ChatController::class, 'index'])->name('features.chats.index');
+        Route::post('/features/chats', [\App\Http\Controllers\Features\ChatController::class, 'store'])->name('features.chats.store');
+        Route::get('/features/chats/{chat}/messages', [\App\Http\Controllers\Features\MessageController::class, 'index'])->name('features.chats.messages.index');
+        Route::post('/features/chats/{chat}/messages', [\App\Http\Controllers\Features\MessageController::class, 'store'])->name('features.chats.messages.store');
     Route::post('/features/events/{event}/schedules', [\App\Http\Controllers\Features\EventScheduleController::class, 'store'])->name('features.events.schedules.store');
     Route::post('/features/events/{event}/schedules/{schedule}/sessions', [\App\Http\Controllers\Features\EventScheduleController::class, 'storeSession'])->name('features.events.schedules.sessions.store');
     Route::get('/features/events/{event}/schedules', [\App\Http\Controllers\Features\EventScheduleController::class, 'index'])->name('features.events.schedules.index');
