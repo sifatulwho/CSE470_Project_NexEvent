@@ -9,10 +9,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    // Show a friendly landing page for guests, redirect authenticated users to the dashboard
+    // Redirect guests to the login page; authenticated users go to the dashboard
     return auth()->check()
         ? redirect()->route('dashboard')
-        : view('welcome');
+        : redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {

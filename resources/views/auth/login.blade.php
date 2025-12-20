@@ -103,9 +103,8 @@
                     </form>
 
                     <div class="mt-6 grid gap-4 text-sm text-gray-500 sm:grid-cols-2">
-                        <p>Having trouble signing in? Reach our concierge team directly at <span class="font-semibold text-gray-700">events@nexevent.test</span>.</p>
-                        <p class="text-sm">No account yet? <a href="{{ route('register') }}" class="font-semibold text-indigo-600 hover:text-indigo-500">Create one in a minute</a>.</p>
-                    </div>
+                        <p>Having trouble signing in? Reach our concierge team directly at <span class="font-semibold text-gray-700">admin@nexevent.org</span>.</p>
+                    </div> 
                 </div>
             </div>
         </div>

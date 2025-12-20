@@ -142,7 +142,6 @@
 
                     <div class="mt-8 grid gap-4 text-sm text-gray-500 sm:grid-cols-2">
                         <p>Invite your teammates once you are inside. You can manage roles and permissions from the control center anytime.</p>
-                        <p>Have an enterprise rollout? Email <span class="font-semibold text-gray-700">hello@nexevent.test</span> for guided onboarding.</p>
                     </div>
                 </div>
             </div>
