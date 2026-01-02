@@ -13,6 +13,7 @@
                         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                             @if($wishlist->wishlistable_type === 'App\Models\Event')
                                 @php($item = $wishlist->wishlistable)
+                                @if($item)
                                 @if($item->image_url)
                                     <img src="{{ $item->image_url }}" alt="{{ $item->title }}" class="w-full h-48 object-cover">
                                 @else
@@ -34,8 +35,10 @@
                                         </form>
                                     </div>
                                 </div>
+                                @endif
                             @elseif($wishlist->wishlistable_type === 'App\Models\EventResource')
                                 @php($item = $wishlist->wishlistable)
+                                @if($item)
                                 <div class="p-6">
                                     <div class="flex items-center mb-4">
                                         <svg class="w-12 h-12 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,6 +63,7 @@
                                         </form>
                                     </div>
                                 </div>
+                                @endif
                             @endif
                         </div>
                     @endforeach

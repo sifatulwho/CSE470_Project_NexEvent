@@ -52,7 +52,11 @@
                                         Download
                                     </a>
                                     @auth
-                                        @if(!\App\Models\Wishlist::where('user_id', auth()->id())->where('wishlistable_id', $resource->id)->where('wishlistable_type', 'App\Models\EventResource')->exists())
+                                        @php($inWishlist = \App\Models\Wishlist::where('user_id', auth()->id())
+                                            ->where('wishlistable_id', $resource->id)
+                                            ->where('wishlistable_type', 'App\Models\EventResource')
+                                            ->exists())
+                                        @if(!$inWishlist)
                                             <form method="POST" action="{{ route('wishlist.add-resource', $resource) }}" class="inline">
                                                 @csrf
                                                 <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded text-sm">
