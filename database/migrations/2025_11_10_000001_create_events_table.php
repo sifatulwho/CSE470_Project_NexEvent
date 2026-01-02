@@ -13,20 +13,16 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('organizer_id')->constrained('users')->cascadeOnDelete();
             $table->string('title');
             $table->text('description')->nullable();
             $table->dateTime('start_date');
             $table->dateTime('end_date');
-            $table->string('location');
-            $table->integer('max_attendees')->nullable();
-            $table->foreignId('organizer_id')->constrained('users')->onDelete('cascade');
-            $table->string('image_url')->nullable();
-            $table->enum('status', ['draft', 'published', 'ongoing', 'completed', 'cancelled'])->default('draft');
+            $table->string('location')->nullable();
+            $table->string('category')->nullable();
+            $table->integer('capacity')->nullable();
+            $table->string('status')->default('scheduled');
             $table->timestamps();
-
-            $table->index('organizer_id');
-            $table->index('status');
-            $table->index('start_date');
         });
     }
 

@@ -130,16 +130,13 @@
                             <div class="flex flex-wrap gap-3 mb-8">
                                 @auth
                                     @if($inWishlist)
-                                        @php($wishlistItem = \App\Models\Wishlist::where('user_id', auth()->id())->where('wishlistable_id', $event->id)->where('wishlistable_type', 'App\Models\Event')->first())
-                                        @if($wishlistItem)
-                                            <form method="POST" action="{{ route('wishlist.remove', $wishlistItem) }}" class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                                    Remove from Wishlist
-                                                </button>
-                                            </form>
-                                        @endif
+                                        <form method="POST" action="{{ route('wishlist.remove', \App\Models\Wishlist::where('user_id', auth()->id())->where('wishlistable_id', $event->id)->where('wishlistable_type', 'App\Models\Event')->first()) }}" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                                Remove from Wishlist
+                                            </button>
+                                        </form>
                                     @else
                                         <form method="POST" action="{{ route('wishlist.add-event', $event) }}" class="inline">
                                             @csrf
@@ -212,7 +209,7 @@
                                     </div>
                                     <div class="space-y-3">
                                         @foreach($event->announcements->sortByDesc('is_important')->sortByDesc('created_at')->take(3) as $announcement)
-                                            <div class="p-4 {{ $announcement->is_important ? 'bg-red-50 border-l-4 border-red-500' : 'bg-blue-50 border-l-4 border-blue-500' }} rounded">
+                                            <div class="p-4 bg-{{ $announcement->is_important ? 'red' : 'blue' }}-50 border-l-4 border-{{ $announcement->is_important ? 'red' : 'blue' }}-500 rounded">
                                                 <h4 class="font-semibold text-gray-900">{{ $announcement->title }}</h4>
                                                 <p class="text-sm text-gray-600 mt-1">{{ \Illuminate\Support\Str::limit($announcement->content, 150) }}</p>
                                                 <p class="text-xs text-gray-500 mt-2">{{ $announcement->created_at->diffForHumans() }}</p>

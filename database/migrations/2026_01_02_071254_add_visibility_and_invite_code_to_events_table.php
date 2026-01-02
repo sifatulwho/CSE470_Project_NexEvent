@@ -1,0 +1,29 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('events', function (Blueprint $table) {
+            $table->string('visibility')->default('public')->after('status'); // public, private, invite_only
+            $table->string('invite_code')->nullable()->after('visibility');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('events', function (Blueprint $table) {
+            $table->dropColumn(['visibility', 'invite_code']);
+        });
+    }
+};

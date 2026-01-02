@@ -15,15 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
             $table->foreignId('attendee_id')->constrained('users')->onDelete('cascade');
-            $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending');
-            $table->dateTime('registered_at')->useCurrent();
-            $table->dateTime('cancelled_at')->nullable();
-            $table->text('notes')->nullable();
+            $table->string('status')->default('registered'); // registered, checked_in, no_show, cancelled
+            $table->timestamp('registered_at')->useCurrent();
+            $table->timestamp('checked_in_at')->nullable();
             $table->timestamps();
 
+            // Ensure unique registration per event per user
             $table->unique(['event_id', 'attendee_id']);
-            $table->index('status');
-            $table->index('registered_at');
         });
     }
 

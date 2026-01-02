@@ -16,6 +16,10 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    
+                    <x-nav-link :href="route('events.index')" :active="request()->routeIs('events.*')">
+                        {{ __('Events') }}
+                    </x-nav-link>
 
                     @if ($navUser && $navUser->hasRole(\App\Models\User::ROLE_ADMIN))
                         <x-nav-link :href="route('admin.overview')" :active="request()->routeIs('admin.overview')">
@@ -34,11 +38,33 @@
                             {{ __('My Events') }}
                         </x-nav-link>
                     @endif
+                    
+                    @auth
+                        <x-nav-link :href="route('wishlist.index')" :active="request()->routeIs('wishlist.*')">
+                            {{ __('Wishlist') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('messages.conversations')" :active="request()->routeIs('messages.*')">
+                            {{ __('Messages') }}
+                        </x-nav-link>
+                    @endauth
+                </div>
+                
+                <!-- Search Bar -->
+                <div class="hidden sm:flex sm:items-center sm:ml-6">
+                    <form method="GET" action="{{ route('search') }}" class="flex">
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Search events..." 
+                            class="rounded-l-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 w-64">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-r-md">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </button>
+                    </form>
                 </div>
             </div>
 
             <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ml-6">
+            <div class="hidden sm:flex sm:items-center sm:ml-6 sm:space-x-4">
                 {{-- Notifications dropdown --}}
                 @auth
                     @php($unread = auth()->user()->unreadNotifications->count())

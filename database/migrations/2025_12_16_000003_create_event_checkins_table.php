@@ -13,9 +13,16 @@ return new class extends Migration
     {
         Schema::create('event_checkins', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
-            $table->foreignId('attendee_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('checked_in_by')->constrained('users')->onDelete('set null')->nullable();
+
+            // Event reference
+            $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
+
+            // Attendee reference
+            $table->foreignId('attendee_id')->constrained('users')->cascadeOnDelete();
+
+            // Checked-in by (nullable, SET NULL on delete)
+            $table->foreignId('checked_in_by')->nullable()->constrained('users')->nullOnDelete();
+
             $table->timestamp('checked_in_at');
             $table->string('check_in_method')->default('manual'); // manual, qr_code, etc
             $table->text('notes')->nullable();
@@ -31,6 +38,13 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('event_checkins', function (Blueprint $table) {
+            // Drop foreign keys first to avoid MySQL errors
+            $table->dropForeign(['event_id']);
+            $table->dropForeign(['attendee_id']);
+            $table->dropForeign(['checked_in_by']);
+        });
+
         Schema::dropIfExists('event_checkins');
     }
 };

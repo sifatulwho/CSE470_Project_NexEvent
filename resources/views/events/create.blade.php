@@ -53,6 +53,44 @@
                         @error('location')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
                     </div>
 
+                    <!-- Category -->
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700">Category (optional)</label>
+                        <select name="category" id="category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="">Select Category</option>
+                            <option value="seminar" {{ old('category') == 'seminar' ? 'selected' : '' }}>Seminar</option>
+                            <option value="workshop" {{ old('category') == 'workshop' ? 'selected' : '' }}>Workshop</option>
+                            <option value="concert" {{ old('category') == 'concert' ? 'selected' : '' }}>Concert</option>
+                            <option value="orientation" {{ old('category') == 'orientation' ? 'selected' : '' }}>Orientation</option>
+                            <option value="reunion" {{ old('category') == 'reunion' ? 'selected' : '' }}>Reunion</option>
+                            <option value="conference" {{ old('category') == 'conference' ? 'selected' : '' }}>Conference</option>
+                            <option value="meetup" {{ old('category') == 'meetup' ? 'selected' : '' }}>Meetup</option>
+                            <option value="other" {{ old('category') == 'other' ? 'selected' : '' }}>Other</option>
+                        </select>
+                        @error('category')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
+                    </div>
+
+                    <!-- Tags -->
+                    <div>
+                        <label for="tags" class="block text-sm font-medium text-gray-700">Tags (comma-separated, optional)</label>
+                        <input type="text" name="tags_input" id="tags_input" value="{{ old('tags_input') }}" 
+                            placeholder="e.g., technology, networking, education"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <p class="mt-1 text-sm text-gray-500">Enter tags separated by commas</p>
+                    </div>
+
+                    <!-- Visibility -->
+                    <div>
+                        <label for="visibility" class="block text-sm font-medium text-gray-700">Visibility</label>
+                        <select name="visibility" id="visibility" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="public" {{ old('visibility', 'public') == 'public' ? 'selected' : '' }}>Public - Visible to everyone</option>
+                            <option value="private" {{ old('visibility') == 'private' ? 'selected' : '' }}>Private - Only visible to registered attendees</option>
+                            <option value="invite_only" {{ old('visibility') == 'invite_only' ? 'selected' : '' }}>Invite Only - Requires invite code</option>
+                        </select>
+                        @error('visibility')<span class="text-red-500 text-sm">{{ $message }}</span>@enderror
+                    </div>
+
                     <!-- Max Attendees -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>

@@ -16,6 +16,32 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Search Bar -->
+            <div class="mb-6 bg-white p-4 rounded-lg shadow-sm">
+                <form method="GET" action="{{ route('events.index') }}" class="flex gap-4">
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Search events..." 
+                        class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <select name="category" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">All Categories</option>
+                        <option value="seminar" {{ request('category') == 'seminar' ? 'selected' : '' }}>Seminar</option>
+                        <option value="workshop" {{ request('category') == 'workshop' ? 'selected' : '' }}>Workshop</option>
+                        <option value="concert" {{ request('category') == 'concert' ? 'selected' : '' }}>Concert</option>
+                        <option value="orientation" {{ request('category') == 'orientation' ? 'selected' : '' }}>Orientation</option>
+                        <option value="reunion" {{ request('category') == 'reunion' ? 'selected' : '' }}>Reunion</option>
+                        <option value="conference" {{ request('category') == 'conference' ? 'selected' : '' }}>Conference</option>
+                        <option value="meetup" {{ request('category') == 'meetup' ? 'selected' : '' }}>Meetup</option>
+                    </select>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                        Search
+                    </button>
+                    @if(request('q') || request('category'))
+                        <a href="{{ route('events.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                            Clear
+                        </a>
+                    @endif
+                </form>
+            </div>
+
             @if($events->count() > 0)
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($events as $event)

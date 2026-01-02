@@ -1,59 +1,253 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# NexEvent - Next Generation Event Platform
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+NexEvent is a comprehensive event management platform built with Laravel (PHP) framework. It provides a single, organized system for users to manage, create, and participate in events.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Core User Management
+- ✅ User Registration & Login with secure authentication
+- ✅ Role-Based Access Control (RBAC) - Admin, Organizer, and Attendee roles
+- ✅ Profile Management with photo upload
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Event Creation & Management
+- ✅ Create Event - Organizers can create events with title, date, venue, and description
+- ✅ Edit / Delete Event - Organizers can modify or remove events
+- ✅ Event Categories & Tags - Events can be classified and tagged for easy filtering
+- ✅ Event Visibility Settings - Events can be public, private, or invite-only
+- ✅ Announcement Section - Organizers can post updates for each event
+- ✅ Search events - Search functionality available on all pages
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Registration & Ticketing
+- ✅ Event Registration - Easy registration and cancellation by attendees
+- ✅ Digital Ticket Generation - Unique ticket IDs generated automatically
+- ✅ Add to Wishlist - Events and resources can be bookmarked
+- ✅ Upload resources - Organizers can upload event materials
+- ✅ Show resources - Users can view and add resources to wishlist
 
-## Learning Laravel
+### Scheduling & Notifications
+- ✅ Event Schedule Module - Detailed timelines with sessions and speakers
+- ✅ Event registration/reminder notifications - Automatic confirmations and reminders
+- ✅ Upcoming events notifications
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Interaction & Feedback
+- ✅ Chat System - Group chat for events and individual messaging
+- ✅ Comment Section - Users can post comments, questions, or feedback
+- ✅ Rating & Review System - Users can rate and review events after attending
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Analytics & Reporting
+- ✅ Dashboard Analytics - Statistics for users, registrations, and events
+- ✅ Different dashboards for Admin, Organizer, and Attendee
+- ✅ Manual Check-in List - Mark attendees as present during events
+- ✅ Certificate Generation - Generate certificates for registered and present attendees
+- ✅ Event Link Sharing - Shareable event links
 
-## Laravel Sponsors
+## Technology Stack
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **Backend:** PHP (Laravel Framework)
+- **Frontend:** HTML, CSS, Blade Templates
+- **Database:** MySQL
 
-### Premium Partners
+## Requirements
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- PHP >= 8.2
+- Composer
+- MySQL >= 5.7 or MariaDB >= 10.3
+- Node.js and NPM (for asset compilation, if needed)
+
+## Installation
+
+### 1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd nexevent
+```
+
+### 2. Install PHP dependencies
+
+```bash
+composer install
+```
+
+### 3. Environment setup
+
+Copy the `.env.example` file to `.env`:
+
+```bash
+cp .env.example .env
+```
+
+Generate application key:
+
+```bash
+php artisan key:generate
+```
+
+### 4. Configure database
+
+Edit the `.env` file and set your database credentials:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=nexevent
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 5. Run migrations
+
+Create the database and run migrations:
+
+```bash
+php artisan migrate
+```
+
+(Optional) Seed the database with demo data:
+
+```bash
+php artisan db:seed
+```
+
+### 6. Create storage link
+
+Create a symbolic link for storage:
+
+```bash
+php artisan storage:link
+```
+
+### 7. Start the development server
+
+```bash
+php artisan serve
+```
+
+The application will be available at `http://localhost:8000`
+
+## Usage
+
+### Creating User Accounts
+
+1. Register a new account through the registration page
+2. Default role is "Attendee"
+3. To create an Organizer account, register and contact an admin to change your role
+4. Admin accounts can be created by setting the email in config or through the database
+
+### Event Management (Organizers)
+
+1. Login as an Organizer
+2. Navigate to "Create Event" from the dashboard
+3. Fill in event details including:
+   - Title, description, dates, location
+   - Category and tags
+   - Visibility settings (public, private, or invite-only)
+   - Maximum attendees
+4. Add sessions and speakers
+5. Upload resources
+6. Post announcements
+7. Manage check-ins during the event
+
+### Attending Events (Attendees)
+
+1. Browse events from the events page
+2. Use search to find specific events
+3. Register for events
+4. View and download tickets
+5. Add events to wishlist
+6. Participate in event chat
+7. Comment and review events
+8. Download resources
+9. Generate certificates after attending
+
+## Database Schema
+
+The application includes the following main tables:
+
+- `users` - User accounts with roles
+- `events` - Event information
+- `event_registrations` - Event registrations
+- `tickets` - Digital tickets
+- `tags` - Event tags
+- `event_tag` - Many-to-many relationship for event tags
+- `announcements` - Event announcements
+- `event_resources` - Event resources/files
+- `wishlists` - User wishlists (polymorphic)
+- `messages` - Chat messages (group and individual)
+- `comments` - Event comments
+- `reviews` - Event reviews with ratings
+- `certificates` - Generated certificates
+- `sessions` - Event schedule sessions
+- `speakers` - Event speakers
+- `event_checkins` - Attendee check-ins
+
+## Key Features Implementation
+
+### Event Visibility
+
+- **Public:** Visible to everyone
+- **Private:** Visible only to organizer, admins, and registered attendees
+- **Invite-only:** Requires invite code to view/register
+
+### Search Functionality
+
+Search is available on all pages through the search bar. It searches event titles, descriptions, and locations.
+
+### Wishlist System
+
+Users can add events and resources to their wishlist. Items can be viewed and managed from the wishlist page.
+
+### Chat System
+
+- **Group Chat:** Available for each event, allowing all participants to communicate
+- **Individual Messages:** Users can send direct messages to each other
+
+### Certificate Generation
+
+Certificates are automatically generated for users who:
+1. Registered for the event
+2. Were checked in during the event
+
+Certificates can be viewed and downloaded from the user's dashboard.
+
+## File Structure
+
+```
+nexevent/
+├── app/
+│   ├── Http/
+│   │   └── Controllers/     # All controllers
+│   ├── Models/              # Eloquent models
+│   ├── Policies/            # Authorization policies
+│   └── Notifications/       # Email notifications
+├── database/
+│   ├── migrations/          # Database migrations
+│   └── seeders/            # Database seeders
+├── resources/
+│   └── views/              # Blade templates
+├── routes/
+│   └── web.php             # Web routes
+└── public/                 # Public assets
+```
+
+## Security Features
+
+- ✅ CSRF protection
+- ✅ XSS protection
+- ✅ Password hashing
+- ✅ Role-based access control
+- ✅ Authorization policies
+- ✅ SQL injection protection (via Eloquent ORM)
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+This is a project for Software Engineering course. For questions or issues, please contact the development team.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is developed for educational purposes.
+
+## Support
+
+For support, please refer to the Laravel documentation: https://laravel.com/docs
