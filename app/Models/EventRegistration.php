@@ -11,28 +11,14 @@ class EventRegistration extends Model
 {
     use HasFactory;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-class EventRegistration extends Model
-{
     protected $fillable = [
         'event_id',
         'attendee_id',
         'status',
         'registered_at',
+        'checked_in_at',
         'cancelled_at',
         'notes',
-    ];
-
-    protected $casts = [
-        'registered_at' => 'datetime',
-        'cancelled_at' => 'datetime',
-    ];
-
-    /**
-     * Get the event this registration belongs to.
-        'checked_in_at',
     ];
 
     protected function casts(): array
@@ -40,6 +26,7 @@ class EventRegistration extends Model
         return [
             'registered_at' => 'datetime',
             'checked_in_at' => 'datetime',
+            'cancelled_at' => 'datetime',
         ];
     }
 
@@ -52,7 +39,6 @@ class EventRegistration extends Model
     }
 
     /**
-     * Get the attendee (user) of this registration.
      * Get the attendee.
      */
     public function attendee(): BelongsTo
@@ -65,7 +51,6 @@ class EventRegistration extends Model
      */
     public function ticket(): HasOne
     {
-        // ticket table stores foreign key as `registration_id`
         return $this->hasOne(Ticket::class, 'registration_id');
     }
 
@@ -88,7 +73,7 @@ class EventRegistration extends Model
      */
     public function isActive(): bool
     {
-        return $this->status === 'confirmed';
+        return $this->status === 'confirmed' || $this->status === 'registered';
     }
 
     /**

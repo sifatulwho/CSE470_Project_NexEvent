@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Certificate;
 use App\Models\EventCheckin;
+use App\Models\EventRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -17,8 +18,9 @@ class CertificateController extends Controller
     public function generate(Event $event)
     {
         // Check if user is registered and checked in
-        $registration = $event->registrations()
+        $registration = EventRegistration::where('event_id', $event->id)
             ->where('attendee_id', Auth::id())
+            ->whereIn('status', ['confirmed', 'registered'])
             ->first();
 
         if (!$registration) {

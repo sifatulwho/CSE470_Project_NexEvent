@@ -16,7 +16,16 @@ class WishlistController extends Controller
     public function index()
     {
         $wishlists = Wishlist::where('user_id', Auth::id())
-            ->with(['wishlistable'])
+            ->with(['wishlistable' => function($query) {
+                // Eager load relationships for events
+                if (method_exists($query->getModel(), 'organizer')) {
+                    $query->with('organizer');
+                }
+                // Eager load relationships for resources
+                if (method_exists($query->getModel(), 'event')) {
+                    $query->with('event');
+                }
+            }])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
@@ -28,7 +37,17 @@ class WishlistController extends Controller
      */
     public function addEvent(Event $event)
     {
-        $wishlist = Wishlist::firstOrCreate([
+        $existing = Wishlist::where('user_id', Auth::id())
+            ->where('wishlistable_id', $event->id)
+            ->where('wishlistable_type', Event::class)
+            ->first();
+
+        if ($existing) {
+            return redirect()->back()
+                ->with('info', 'Event is already in your wishlist!');
+        }
+
+        Wishlist::create([
             'user_id' => Auth::id(),
             'wishlistable_id' => $event->id,
             'wishlistable_type' => Event::class,
@@ -43,7 +62,17 @@ class WishlistController extends Controller
      */
     public function addResource(EventResource $resource)
     {
-        $wishlist = Wishlist::firstOrCreate([
+        $existing = Wishlist::where('user_id', Auth::id())
+            ->where('wishlistable_id', $resource->id)
+            ->where('wishlistable_type', EventResource::class)
+            ->first();
+
+        if ($existing) {
+            return redirect()->back()
+                ->with('info', 'Resource is already in your wishlist!');
+        }
+
+        Wishlist::create([
             'user_id' => Auth::id(),
             'wishlistable_id' => $resource->id,
             'wishlistable_type' => EventResource::class,
@@ -58,7 +87,10 @@ class WishlistController extends Controller
      */
     public function remove(Wishlist $wishlist)
     {
-        $this->authorize('delete', $wishlist);
+        // Check if user owns this wishlist item
+        if ($wishlist->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $wishlist->delete();
 

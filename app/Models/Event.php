@@ -198,7 +198,8 @@ class Event extends Model
      */
     public function getAverageRatingAttribute(): float
     {
-        return $this->reviews()->avg('rating') ?? 0;
+        $avg = $this->reviews()->avg('rating');
+        return $avg ? (float) $avg : 0.0;
     }
 
     /**

@@ -33,10 +33,13 @@ class EventController extends Controller
             $query->where('category', $request->category);
         }
 
-        // Filter by visibility
+        // Filter by visibility (handle null as public for backward compatibility)
         if (Auth::check()) {
             $query->where(function($q) {
-                $q->where('visibility', 'public')
+                $q->where(function($q1) {
+                    $q1->where('visibility', 'public')
+                       ->orWhereNull('visibility');
+                })
                   ->orWhere(function($q2) {
                       $q2->where('visibility', 'private')
                          ->where(function($q3) {
@@ -57,7 +60,10 @@ class EventController extends Controller
                   });
             });
         } else {
-            $query->where('visibility', 'public');
+            $query->where(function($q) {
+                $q->where('visibility', 'public')
+                  ->orWhereNull('visibility');
+            });
         }
 
         $events = $query->with(['organizer', 'tags'])
@@ -81,6 +87,11 @@ class EventController extends Controller
                 return view('events.invite', compact('event'));
             }
         }
+        
+        // Set default visibility if null
+        if (!$event->visibility) {
+            $event->visibility = 'public';
+        }
 
         $isRegistered = Auth::check() ? 
             EventRegistration::where('event_id', $event->id)
@@ -93,7 +104,7 @@ class EventController extends Controller
                 ->first() : null;
 
         $event->load(['organizer', 'tags', 'sessions.speakers', 'announcements.user', 
-                     'resources.user', 'comments.user', 'reviews.user']);
+                     'resources.user', 'comments.user', 'reviews.user', 'checkins']);
 
         $inWishlist = Auth::check() ? 
             \App\Models\Wishlist::where('user_id', Auth::id())
@@ -129,6 +140,7 @@ class EventController extends Controller
             'capacity' => 'nullable|integer|min:1',
             'image_url' => 'nullable|url',
             'visibility' => 'required|in:public,private,invite_only',
+            'tags' => 'nullable|string',
             'tags_input' => 'nullable|string',
         ]);
 
@@ -154,8 +166,9 @@ class EventController extends Controller
         ]);
 
         // Handle tags
-        if (!empty($validated['tags_input'])) {
-            $tagNames = array_map('trim', explode(',', $validated['tags_input']));
+        $tagsInput = $validated['tags'] ?? $validated['tags_input'] ?? null;
+        if (!empty($tagsInput)) {
+            $tagNames = array_map('trim', explode(',', $tagsInput));
             $tagIds = [];
             foreach ($tagNames as $tagName) {
                 if ($tagName) {
@@ -200,6 +213,7 @@ class EventController extends Controller
             'image_url' => 'nullable|url',
             'visibility' => 'required|in:public,private,invite_only',
             'status' => 'required|in:draft,published,ongoing,completed,cancelled',
+            'tags' => 'nullable|string',
             'tags_input' => 'nullable|string',
         ]);
 
@@ -226,8 +240,9 @@ class EventController extends Controller
         ]);
 
         // Handle tags
-        if (isset($validated['tags_input']) && !empty($validated['tags_input'])) {
-            $tagNames = array_map('trim', explode(',', $validated['tags_input']));
+        $tagsInput = $validated['tags'] ?? $validated['tags_input'] ?? null;
+        if (!empty($tagsInput)) {
+            $tagNames = array_map('trim', explode(',', $tagsInput));
             $tagIds = [];
             foreach ($tagNames as $tagName) {
                 if ($tagName) {

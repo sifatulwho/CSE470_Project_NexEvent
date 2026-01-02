@@ -54,7 +54,7 @@
                                     <span class="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-semibold">{{ ucfirst($event->category) }}</span>
                                 @endif
                                 <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-semibold">
-                                    @if($event->visibility === 'public') Public
+                                    @if($event->visibility === 'public' || !$event->visibility) Public
                                     @elseif($event->visibility === 'private') Private
                                     @else Invite Only
                                     @endif
@@ -108,7 +108,7 @@
                                         </span>
                                     </p>
                                 </div>
-                                @if($event->average_rating > 0)
+                                @if($event->reviews && $event->reviews->count() > 0)
                                     <div>
                                         <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Rating</h3>
                                         <p class="mt-1 text-lg text-gray-900">
@@ -151,7 +151,7 @@
                                     <a href="{{ route('events.messages.index', $event) }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                                         Event Chat
                                     </a>
-                                    @if($event->resources->count() > 0)
+                                    @if($event->resources && $event->resources->count() > 0)
                                         <a href="{{ route('events.resources.index', $event) }}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
                                             Resources ({{ $event->resources->count() }})
                                         </a>
@@ -204,7 +204,7 @@
                             </div>
 
                             <!-- Announcements -->
-                            @if($event->announcements->count() > 0)
+                            @if($event->announcements && $event->announcements->count() > 0)
                                 <div class="mb-8 border-t pt-8">
                                     <div class="flex justify-between items-center mb-4">
                                         <h3 class="text-lg font-semibold text-gray-900">Announcements</h3>
@@ -236,7 +236,7 @@
                                             <a href="{{ route('registrations.confirmCancel', $registration) }}" class="flex-1 text-center bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded transition">
                                                 Cancel Registration
                                             </a>
-                                            @if($event->checkins->where('attendee_id', auth()->id())->count() > 0)
+                                            @if($event->checkins && $event->checkins->where('attendee_id', auth()->id())->count() > 0)
                                                 <form method="POST" action="{{ route('certificates.generate', $event) }}" class="flex-1">
                                                     @csrf
                                                     <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-4 rounded transition">
@@ -283,31 +283,33 @@
                                 </form>
                             @endauth
 
-                            @if($event->comments->count() > 0)
+                            @if($event->comments && $event->comments->count() > 0)
                                 <div class="space-y-4">
                                     @foreach($event->comments as $comment)
-                                        <div class="border-b pb-4">
-                                            <div class="flex items-start space-x-3">
-                                                <img src="{{ $comment->user->profile_photo_url }}" alt="{{ $comment->user->name }}" class="w-10 h-10 rounded-full">
-                                                <div class="flex-1">
-                                                    <div class="flex items-center space-x-2">
-                                                        <h4 class="font-semibold text-gray-900">{{ $comment->user->name }}</h4>
-                                                        <span class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
-                                                    </div>
-                                                    <p class="text-gray-700 mt-1">{{ $comment->content }}</p>
-                                                    @can('update', $comment)
-                                                        <div class="mt-2 space-x-2">
-                                                            <a href="#" class="text-indigo-600 text-sm">Edit</a>
-                                                            <form method="POST" action="{{ route('comments.destroy', [$event, $comment]) }}" class="inline">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="text-red-600 text-sm">Delete</button>
-                                                            </form>
+                                        @if($comment->user)
+                                            <div class="border-b pb-4">
+                                                <div class="flex items-start space-x-3">
+                                                    <img src="{{ $comment->user->profile_photo_url }}" alt="{{ $comment->user->name }}" class="w-10 h-10 rounded-full">
+                                                    <div class="flex-1">
+                                                        <div class="flex items-center space-x-2">
+                                                            <h4 class="font-semibold text-gray-900">{{ $comment->user->name }}</h4>
+                                                            <span class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
                                                         </div>
-                                                    @endcan
+                                                        <p class="text-gray-700 mt-1">{{ $comment->content }}</p>
+                                                        @can('update', $comment)
+                                                            <div class="mt-2 space-x-2">
+                                                                <a href="#" class="text-indigo-600 text-sm">Edit</a>
+                                                                <form method="POST" action="{{ route('comments.destroy', [$event, $comment]) }}" class="inline">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="text-red-600 text-sm">Delete</button>
+                                                                </form>
+                                                            </div>
+                                                        @endcan
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        @endif
                                     @endforeach
                                 </div>
                             @else
@@ -321,7 +323,7 @@
                         <div class="p-8">
                             <h3 class="text-lg font-semibold text-gray-900 mb-4">Reviews</h3>
                             @auth
-                                @if($isRegistered && !$event->reviews->where('user_id', auth()->id())->first())
+                                @if($isRegistered && $event->reviews && !$event->reviews->where('user_id', auth()->id())->first())
                                     <form method="POST" action="{{ route('reviews.store', $event) }}" class="mb-6 bg-gray-50 p-4 rounded-lg">
                                         @csrf
                                         <div class="mb-3">
@@ -343,28 +345,30 @@
                                 @endif
                             @endauth
 
-                            @if($event->reviews->count() > 0)
+                            @if($event->reviews && $event->reviews->count() > 0)
                                 <div class="space-y-4">
                                     @foreach($event->reviews as $review)
-                                        <div class="border-b pb-4">
-                                            <div class="flex items-start space-x-3">
-                                                <img src="{{ $review->user->profile_photo_url }}" alt="{{ $review->user->name }}" class="w-10 h-10 rounded-full">
-                                                <div class="flex-1">
-                                                    <div class="flex items-center space-x-2">
-                                                        <h4 class="font-semibold text-gray-900">{{ $review->user->name }}</h4>
-                                                        <div class="text-yellow-500">
-                                                            @for($i = 1; $i <= 5; $i++)
-                                                                {{ $i <= $review->rating ? '★' : '☆' }}
-                                                            @endfor
+                                        @if($review->user)
+                                            <div class="border-b pb-4">
+                                                <div class="flex items-start space-x-3">
+                                                    <img src="{{ $review->user->profile_photo_url }}" alt="{{ $review->user->name }}" class="w-10 h-10 rounded-full">
+                                                    <div class="flex-1">
+                                                        <div class="flex items-center space-x-2">
+                                                            <h4 class="font-semibold text-gray-900">{{ $review->user->name }}</h4>
+                                                            <div class="text-yellow-500">
+                                                                @for($i = 1; $i <= 5; $i++)
+                                                                    {{ $i <= $review->rating ? '★' : '☆' }}
+                                                                @endfor
+                                                            </div>
+                                                            <span class="text-xs text-gray-500">{{ $review->created_at->diffForHumans() }}</span>
                                                         </div>
-                                                        <span class="text-xs text-gray-500">{{ $review->created_at->diffForHumans() }}</span>
+                                                        @if($review->review)
+                                                            <p class="text-gray-700 mt-1">{{ $review->review }}</p>
+                                                        @endif
                                                     </div>
-                                                    @if($review->review)
-                                                        <p class="text-gray-700 mt-1">{{ $review->review }}</p>
-                                                    @endif
                                                 </div>
                                             </div>
-                                        </div>
+                                        @endif
                                     @endforeach
                                 </div>
                             @else
@@ -388,7 +392,7 @@
                                 <p class="text-sm text-gray-500">Checked In</p>
                                 <p class="text-2xl font-bold text-gray-900">{{ $event->getTotalCheckedInCount() }}</p>
                             </div>
-                            @if($event->reviews->count() > 0)
+                            @if($event->reviews && $event->reviews->count() > 0)
                                 <div>
                                     <p class="text-sm text-gray-500">Average Rating</p>
                                     <p class="text-2xl font-bold text-gray-900">{{ number_format($event->average_rating, 1) }} / 5.0</p>

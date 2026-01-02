@@ -61,6 +61,10 @@ class MessageController extends Controller
             ->with(['sender', 'receiver'])
             ->latest()
             ->get()
+            ->filter(function($message) {
+                // Filter out messages where sender or receiver is null
+                return $message->sender && $message->receiver;
+            })
             ->groupBy(function($message) {
                 return $message->sender_id === Auth::id() 
                     ? $message->receiver_id 

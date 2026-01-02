@@ -78,7 +78,7 @@
                                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 0a2 2 0 11-4 0 2 2 0 014 0zM5 20H0v-2a6 6 0 016-6v6zm15-6a6 6 0 016 6v2h-5v-6z"></path>
                                             </svg>
-                                            {{ $event->activeRegistrationsCount() }}/{{ $event->max_attendees }}
+                                            {{ $event->getTotalRegisteredCount() }}/{{ $event->max_attendees }}
                                         </div>
                                     @endif
                                 </div>
