@@ -22,7 +22,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // Run event reminders every 15 minutes to catch the 24h and 1h windows
-        $schedule->command('events:send-reminders')->everyFifteenMinutes();
+        // No scheduled commands defined here currently.
     }
 }

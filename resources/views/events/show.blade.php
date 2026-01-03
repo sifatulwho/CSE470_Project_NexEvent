@@ -174,8 +174,114 @@
                             {{ $event->activeRegistrationsCount() === 1 ? 'person' : 'people' }} registered
                         </p>
                     </div>
+
+                    <!-- Share & Promote -->
+                    <div class="mt-6 p-6 bg-white border rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Share &amp; Promote</h3>
+                        <p class="text-sm text-gray-600 mb-4">Share this event with your audience or generate a short promo link to track clicks.</p>
+
+                        <div class="space-y-3">
+                            <div class="flex gap-2 items-center">
+                                <input id="publicLink" type="text" readonly value="{{ route('events.show', $event) }}" class="flex-1 px-3 py-2 border rounded" />
+                                <button id="copyPublic" class="px-4 py-2 bg-gray-800 text-white rounded">Copy</button>
+                                <button id="copyUtm" class="px-4 py-2 bg-indigo-600 text-white rounded">Copy (UTM)</button>
+                                <a id="shareTwitter" href="#" target="_blank" class="px-3 py-2 bg-blue-400 text-white rounded">Twitter</a>
+                                <a id="shareEmail" href="#" class="px-3 py-2 bg-green-600 text-white rounded">Email</a>
+                            </div>
+
+                            @auth
+                                @if(auth()->user()->hasRole(\App\Models\User::ROLE_ORGANIZER) && auth()->id() === $event->organizer_id)
+                                    <div class="pt-4 border-t">
+                                        <form id="promoForm" class="flex gap-2 items-center">
+                                            <input name="label" placeholder="Label (e.g., Facebook Ad)" class="px-3 py-2 border rounded flex-1" />
+                                            <select name="platform" class="px-3 py-2 border rounded">
+                                                <option value="">Platform (optional)</option>
+                                                <option value="facebook">Facebook</option>
+                                                <option value="twitter">Twitter</option>
+                                                <option value="email">Email</option>
+                                                <option value="instagram">Instagram</option>
+                                            </select>
+                                            <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded">Generate Promo Link</button>
+                                        </form>
+
+                                        <div id="promoResult" class="mt-3 hidden">
+                                            <input id="promoLink" type="text" readonly class="w-full px-3 py-2 border rounded" />
+                                            <div class="mt-2 flex gap-2">
+                                                <button id="copyPromo" class="px-4 py-2 bg-gray-800 text-white rounded">Copy Promo Link</button>
+                                                <a id="promoTwitter" href="#" target="_blank" class="px-3 py-2 bg-blue-400 text-white rounded">Share</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endauth
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        (function(){
+            const eventTitle = {!! json_encode($event->title) !!};
+            const publicUrl = "{{ route('events.show', $event) }}";
+            const copy = async (text) => {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    alert('Link copied to clipboard');
+                } catch (e) {
+                    prompt('Copy this link', text);
+                }
+            };
+
+            document.getElementById('copyPublic').addEventListener('click', function(){
+                copy(publicUrl);
+            });
+
+            document.getElementById('copyUtm').addEventListener('click', function(){
+                const utm = publicUrl + (publicUrl.includes('?') ? '&' : '?') + 'utm_source=share&utm_medium=link&utm_campaign=event_{{ $event->id }}';
+                copy(utm);
+            });
+
+            const twitterLink = document.getElementById('shareTwitter');
+            const emailLink = document.getElementById('shareEmail');
+            twitterLink.href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(eventTitle + ' - ' + publicUrl);
+            emailLink.href = 'mailto:?subject=' + encodeURIComponent(eventTitle) + '&body=' + encodeURIComponent(publicUrl + '\n\n' + eventTitle + '\n\n' + '{{ Str::limit(strip_tags($event->description), 200) }}');
+
+            // Promo generation (organizer only)
+            const promoForm = document.getElementById('promoForm');
+            if (promoForm) {
+                promoForm.addEventListener('submit', async function(e){
+                    e.preventDefault();
+                    const formData = new FormData(promoForm);
+                    const data = Object.fromEntries(formData.entries());
+
+                    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                    try {
+                        const resp = await fetch("{{ route('events.promotions.store', $event) }}", {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': token,
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(data)
+                        });
+                        if (!resp.ok) throw resp;
+                        const json = await resp.json();
+                        document.getElementById('promoLink').value = json.url;
+                        document.getElementById('promoResult').classList.remove('hidden');
+                        document.getElementById('promoTwitter').href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(eventTitle + ' - ' + json.url);
+                    } catch (err) {
+                        alert('Failed to create promo link.');
+                    }
+                });
+
+                document.getElementById('copyPromo')?.addEventListener('click', function(){
+                    const v = document.getElementById('promoLink').value;
+                    if (v) copy(v);
+                });
+            }
+        })();
+    </script>
 </x-app-layout>

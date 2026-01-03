@@ -5,6 +5,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\DashboardAnalyticsController;
 use App\Http\Controllers\CheckinController;
+use App\Http\Controllers\EventPromotionController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +23,9 @@ Route::get('/dashboard', function () {
 // Public events routes
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
 Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+
+// Promotion redirect (short promo links)
+Route::get('/p/{token}', [EventPromotionController::class, 'redirect'])->name('promotions.redirect');
 // Analytics Dashboard Routes
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/analytics', [DashboardAnalyticsController::class, 'index'])
@@ -55,6 +59,9 @@ Route::middleware(['auth', 'verified', 'role:'.User::ROLE_ORGANIZER])->group(fun
     Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
     Route::patch('/events/{event}', [EventController::class, 'update'])->name('events.update');
     Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
+
+    // Promotion links (organizer only)
+    Route::post('/events/{event}/promotions', [EventPromotionController::class, 'store'])->name('events.promotions.store');
 
     // Speakers management
     Route::get('/speakers', [\App\Http\Controllers\SpeakerController::class, 'index'])->name('speakers.index');

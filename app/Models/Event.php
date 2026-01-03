@@ -87,6 +87,14 @@ class Event extends Model
     }
 
     /**
+     * Promotions generated for this event (short links / campaigns).
+     */
+    public function promotions(): HasMany
+    {
+        return $this->hasMany(EventPromotion::class);
+    }
+
+    /**
      * Get the count of active registrations.
      */
     public function activeRegistrationsCount(): int

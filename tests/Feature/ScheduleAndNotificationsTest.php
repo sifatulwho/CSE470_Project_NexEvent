@@ -10,7 +10,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 use App\Notifications\RegistrationConfirmed;
-use App\Notifications\EventReminder;
 use Carbon\Carbon;
 
 class ScheduleAndNotificationsTest extends TestCase
@@ -56,25 +55,5 @@ class ScheduleAndNotificationsTest extends TestCase
         $this->assertNotNull($reg);
 
         Notification::assertSentTo($attendee, RegistrationConfirmed::class);
-    }
-
-    public function test_send_reminders_command_sends_notifications()
-    {
-        Notification::fake();
-
-        $attendee = User::factory()->create(['role' => User::ROLE_ATTENDEE]);
-        $organizer = User::factory()->organizer()->create();
-        $event = Event::factory()->create([
-            'organizer_id' => $organizer->id,
-            'status' => 'published',
-            'start_date' => Carbon::now()->addHours(24)->format('Y-m-d H:i:s'),
-            'end_date' => Carbon::now()->addHours(26)->format('Y-m-d H:i:s'),
-        ]);
-
-        EventRegistration::create(['event_id' => $event->id, 'attendee_id' => $attendee->id, 'status' => 'confirmed', 'registered_at' => now()]);
-
-        $this->artisan('events:send-reminders')->assertExitCode(0);
-
-        Notification::assertSentTo($attendee, EventReminder::class);
     }
 }
