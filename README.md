@@ -194,7 +194,7 @@ The application includes the following main tables:
 
 Search is available on all pages through the search bar. It searches event titles, descriptions, and locations.
 
-### Wishlist System
+### Wishlist 
 
 Users can add events and resources to their wishlist. Items can be viewed and managed from the wishlist page.
 
@@ -239,15 +239,3 @@ nexevent/
 - ✅ Role-based access control
 - ✅ Authorization policies
 - ✅ SQL injection protection (via Eloquent ORM)
-
-## Contributing
-
-This is a project for Software Engineering course. For questions or issues, please contact the development team.
-
-## License
-
-This project is developed for educational purposes.
-
-## Support
-
-For support, please refer to the Laravel documentation: https://laravel.com/docs
